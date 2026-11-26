@@ -1,0 +1,15 @@
+### POST EAGER
+POST http://localhost:8080/api/wypozyczenia/odczyt/EAGER
+
+
+### POST LAZY
+POST http://localhost:8080/api/wypozyczenia/odczyt/LAZY
+
+### POST HIBERNATE_STREAM
+POST http://localhost:8080/api/wypozyczenia/odczyt/HIBERNATE_STREAM
+
+### POST HIBERNATE_BATCH
+POST http://localhost:8080/api/wypozyczenia/odczyt/HIBERNATE_BATCH
+
+### POST JDBC_BATCH
+POST http://localhost:8080/api/wypozyczenia/odczyt/JDBC_BATCH

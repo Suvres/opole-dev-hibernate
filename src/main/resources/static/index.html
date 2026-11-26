@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Odczyt wypożyczeń — JVM, ORM i JDBC</title>
+  <style>
+    :root { color-scheme: light; font-family: "Segoe UI", Roboto, Arial, sans-serif; color: #17212b; background: #f3f5f5; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 3px solid #227b63; outline-offset: 3px; }
+    .deck { min-height: 100vh; display: flex; flex-direction: column; }
+    .topbar, .navigation { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px clamp(22px, 5vw, 72px); }
+    .topbar { background: white; border-bottom: 1px solid #e3e8e7; color: #5b6969; font-size: 13px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #263b38; }
+    .brand-mark { width: 23px; height: 23px; border: 6px solid #23765e; border-radius: 50%; }
+    .stage { flex: 1; width: min(1440px, 100%); margin: 0 auto; padding: clamp(24px, 4vw, 54px) clamp(22px, 5vw, 72px); display: flex; }
+    .slide { display: none; width: 100%; align-self: center; }
+    .slide.active { display: block; }
+    .kicker { margin: 0 0 18px; color: #23765e; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 { max-width: 1000px; margin-bottom: 20px; font-weight: 650; letter-spacing: -.045em; line-height: 1.07; }
+    h1 { font-size: clamp(44px, 6.7vw, 88px); }
+    h2 { font-size: clamp(34px, 4.7vw, 62px); }
+    h3 { font-size: 19px; margin-bottom: 10px; }
+    .lead { max-width: 850px; color: #52615f; font-size: clamp(18px, 2vw, 23px); line-height: 1.48; }
+    .title-rule { width: 76px; height: 5px; background: #23765e; margin: 36px 0 25px; }
+    .small { color: #677672; font-size: 14px; line-height: 1.55; }
+    .columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 35px; }
+    .card { padding: 24px; background: #fff; border: 1px solid #e1e8e5; border-radius: 12px; box-shadow: 0 3px 12px #1f382c0b; }
+    .card .number { display: block; margin-bottom: 28px; color: #23765e; font-size: 13px; font-weight: 800; }
+    .card p, .card li { color: #566662; font-size: 16px; line-height: 1.5; }
+    .card p:last-child { margin-bottom: 0; }
+    .note { margin: 28px 0 0; padding: 15px 19px; border-left: 4px solid #96b5a8; background: #e9f0ed; color: #3e5950; line-height: 1.5; }
+    .memory { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-top: 32px; }
+    .memory .card { min-height: 150px; }
+    .memory strong, .state strong { display: block; margin-bottom: 8px; font-size: 20px; }
+    .memory .heap { border-top: 4px solid #23765e; }
+    .memory .threads { border-top: 4px solid #b78d59; }
+    .state-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 38px; }
+    .state { padding: 20px; border-top: 3px solid #23765e; background: white; }
+    .state p { color: #566662; line-height: 1.5; font-size: 15px; }
+    .experiment { display: grid; grid-template-columns: minmax(0, .85fr) minmax(380px, 1.15fr); gap: clamp(30px, 5vw, 76px); align-items: start; }
+    .slide.experiment.active { display: grid; }
+    .experiment h2 { font-size: clamp(32px, 4vw, 54px); overflow-wrap: anywhere; }
+    .talking-points { padding-left: 20px; margin: 28px 0; color: #455752; font-size: clamp(17px, 1.6vw, 20px); line-height: 1.55; }
+    .talking-points li { padding-left: 5px; margin-bottom: 12px; }
+    .live { background: white; border: 1px solid #dfe7e3; border-radius: 12px; box-shadow: 0 5px 24px #1b392d0d; overflow: hidden; }
+    .live-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid #e7ecea; }
+    .live-head strong { font-size: 15px; }
+    .live-body { padding: 18px 20px 20px; }
+    .field-label, .console-label { display: block; margin-bottom: 7px; color: #61716b; font-size: 11px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+    input { width: 100%; padding: 10px 12px; border: 1px solid #cbd6d1; border-radius: 6px; background: white; color: #23332d; font: 13px Consolas, monospace; }
+    .request { display: flex; gap: 12px; align-items: center; margin: 14px 0; padding: 11px; background: #f3f7f5; border: 1px solid #e0eae4; border-radius: 8px; }
+    .run { display: grid; place-items: center; flex: 0 0 38px; width: 38px; height: 38px; border: 0; border-radius: 50%; background: #227a56; color: white; }
+    .run:hover:not(:disabled) { background: #175c40; }
+    .run:disabled { opacity: .45; cursor: not-allowed; }
+    .triangle { width: 0; height: 0; margin-left: 3px; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 9px solid currentColor; }
+    .request code { min-width: 0; overflow-wrap: anywhere; color: #3a5148; font: 12px/1.5 Consolas, monospace; }
+    .request b { color: #1b7653; }
+    .console-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 15px 0 7px; }
+    .console-heading .console-label { margin: 0; }
+    .copy { padding: 4px 8px; border: 0; background: none; color: #23765e; font-size: 12px; font-weight: 700; }
+    pre { margin: 0; padding: 12px; background: #f6f8f7; border: 1px solid #e4eae7; border-radius: 6px; color: #334940; font: 12px/1.5 Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+    #response { min-height: 90px; max-height: 190px; overflow: auto; }
+    .status { padding: 5px 9px; border-radius: 20px; background: #edf2ef; color: #586b60; font-size: 11px; font-weight: 700; }
+    .status.running { background: #fff2d6; color: #815d18; }
+    .status.success { background: #e5f4eb; color: #17613e; }
+    .status.error { background: #fcebea; color: #a53d35; }
+    .meta { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 10px; color: #66756e; font: 12px Consolas, monospace; }
+    .live-hint { margin: 11px 0 0; color: #718079; font-size: 12px; line-height: 1.45; }
+    .navigation { position: sticky; bottom: 0; background: #fff; border-top: 1px solid #e3e8e7; }
+    .nav-info { color: #65756f; font-size: 13px; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .nav-button { min-width: 42px; height: 40px; padding: 0 14px; border: 1px solid #d7e1dc; border-radius: 7px; background: white; color: #25473a; font-size: 17px; }
+    .nav-button:hover:not(:disabled) { background: #edf5f0; }
+    .nav-button:disabled { opacity: .35; cursor: default; }
+    #counter { min-width: 60px; text-align: center; color: #53665e; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .progress { height: 3px; background: #dfe8e3; }
+    .progress span { display: block; height: 100%; background: #23765e; transition: width .2s ease; }
+    @media (max-width: 800px) {
+      .stage { align-items: start; }
+      .columns, .state-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .experiment { grid-template-columns: 1fr; gap: 12px; }
+      .experiment .talking-points { margin: 18px 0; }
+      .nav-info { display: none; }
+    }
+    @media (max-width: 480px) {
+      .topbar { font-size: 11px; }
+      .columns, .state-grid, .memory { grid-template-columns: 1fr; }
+      .card .number { margin-bottom: 12px; }
+      .navigation { justify-content: flex-end; }
+    }
+    @media (prefers-reduced-motion: reduce) { .progress span { transition: none; } }
+  </style>
+</head>
+<body>
+<div class="deck">
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span> Biblioteka / laboratorium</div>
+    <span>JVM · ORM · JDBC</span>
+  </header>
+  <main class="stage" id="stage">
+    <section class="slide active" aria-label="Slajd tytułowy">
+      <p class="kicker">Prelekcja + doświadczenie live</p>
+      <h1>Jak czytamy<br>wypożyczenia?</h1>
+      <p class="lead">Od pamięci JVM do pięciu sposobów odczytu danych. Te same rekordy, różne koszty.</p>
+      <div class="title-rule"></div>
+      <p class="small">JVM / Hibernate / JdbcTemplate<br>Użyj strzałek, aby przejść do następnego slajdu.</p>
+    </section>
+
+    <section class="slide" aria-label="Pamięć JVM">
+      <p class="kicker">01 / Podstawy</p>
+      <h2>Gdzie trafiają obiekty?</h2>
+      <p class="lead">JVM wykonuje bytecode i zarządza pamięcią programu.</p>
+      <div class="memory">
+        <div class="card heap"><strong>Heap</strong><p>Obiekty i encje współdzielone przez wątki. Zazwyczaj dzielony na młodą i starą generację; szczegóły zależą od GC.</p></div>
+        <div class="card threads"><strong>Stosy wątków</strong><p>Ramki metod, zmienne lokalne i odwołania. Każdy wątek ma własny stos.</p></div>
+        <div class="card"><strong>Metaspace</strong><p>Metadane klas, poza heapem.</p></div>
+        <div class="card"><strong>Pamięć natywna</strong><p>M.in. bufory direct; wątek ma też licznik PC i stos natywny.</p></div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Garbage Collector">
+      <p class="kicker">02 / Pamięć</p>
+      <h2>GC sprząta, ale nie na żądanie.</h2>
+      <div class="columns">
+        <div class="card"><span class="number">01</span><h3>Osiągalność</h3><p>Garbage Collector odzyskuje pamięć obiektów, do których nie ma już dostępu.</p></div>
+        <div class="card"><span class="number">02</span><h3>Bez gwarancji czasu</h3><p>Moment uruchomienia GC i odzyskania pamięci nie jest gwarantowany.</p></div>
+        <div class="card"><span class="number">03</span><h3>Zasoby zewnętrzne</h3><p>Połączenia i strumienie trzeba zamykać — GC tego za nas nie zapewnia.</p></div>
+      </div>
+      <p class="note">Heap przed i po odczycie to chwilowe pomiary, nie szczytowe zużycie pamięci.</p>
+    </section>
+
+    <section class="slide" aria-label="ORM">
+      <p class="kicker">03 / Mapowanie</p>
+      <h2>Od tabeli do obiektu.</h2>
+      <p class="lead">ORM mapuje dane relacyjne na obiekty. JPA definiuje standard, Hibernate go implementuje.</p>
+      <div class="columns">
+        <div class="card"><span class="number">EAGER</span><h3>Od razu</h3><p>Powiązane dane pobierane razem z encją.</p></div>
+        <div class="card"><span class="number">LAZY</span><h3>Na żądanie</h3><p>Relacje mogą pozostać niezainicjalizowane.</p></div>
+        <div class="card"><span class="number">KONTEKST</span><h3>Pod kontrolą</h3><p>Persistence context śledzi stan encji. Wygoda ma koszt zapytań i pamięci.</p></div>
+      </div>
+    </section>
+
+    <section class="slide" aria-label="Stany encji">
+      <p class="kicker">04 / Hibernate</p>
+      <h2>Życie encji w czterech stanach.</h2>
+      <div class="state-grid">
+        <div class="state"><strong>New</strong><p>Nowa, nieśledzona encja.</p></div>
+        <div class="state"><strong>Managed</strong><p>Śledzona w persistence context; zmiany mogą być zapisane.</p></div>
+        <div class="state"><strong>Detached</strong><p>Odłączona; zmiany nie są już automatycznie śledzone.</p></div>
+        <div class="state"><strong>Removed</strong><p>Oznaczona do usunięcia przy flush lub commit.</p></div>
+      </div>
+      <p class="note"><code>persist</code> → managed &nbsp; / &nbsp; <code>detach</code> lub <code>clear</code> → detached &nbsp; / &nbsp; <code>remove</code> → removed</p>
+    </section>
+
+    <section class="slide" aria-label="JdbcTemplate">
+      <p class="kicker">05 / JDBC</p>
+      <h2>Bliżej zapytania SQL.</h2>
+      <p class="lead">JdbcTemplate wykonuje jawny SQL bez mapowania encji ORM.</p>
+      <div class="columns">
+        <div class="card"><span class="number">SQL</span><h3>Jawne mapowanie</h3><p>Aplikacja wybiera kolumny i sposób mapowania wiersza.</p></div>
+        <div class="card"><span class="number">STREAM</span><h3>Kursor do przodu</h3><p><code>queryForStream</code> pozwala przetwarzać wyniki w locie.</p></div>
+        <div class="card"><span class="number">1000</span><h3>Fetch size</h3><p>Wskazówka dla sterownika, nie liczba zapytań SQL.</p></div>
+      </div>
+      <p class="note">Strumień trzeba zamknąć. Kursor PostgreSQL działa tutaj w transakcji.</p>
+    </section>
+
+    <section class="slide" aria-label="Założenia doświadczenia">
+      <p class="kicker">06 / Doświadczenie</p>
+      <h2>Co porównujemy?</h2>
+      <div class="columns">
+        <div class="card"><span class="number">5 WARIANTÓW</span><h3>Cała tabela</h3><p>Każdy POST uruchamia własną transakcję tylko do odczytu. Uruchamiamy pojedynczo.</p></div>
+        <div class="card"><span class="number">WSPÓLNY WYNIK</span><h3>Liczba i suma</h3><p>Liczba wierszy i suma kontrolna z UUID oraz daty wypożyczenia.</p></div>
+        <div class="card"><span class="number">POMIARY</span><h3>Czas i heap</h3><p>Odczyt oraz chwilowa zajętość heapu przed i po; wynik zależy m.in. od GC i rozgrzania aplikacji.</p></div>
+      </div>
+      <p class="note">Zakres danych nie jest równoważny: LAZY nie inicjalizuje relacji, a EAGER i JDBC pobierają także powiązane dane. Czas odczytu nie obejmuje commitu ani przesłania odpowiedzi.</p>
+    </section>
+
+    <section class="slide experiment" data-variant="EAGER" aria-label="Eksperyment EAGER">
+      <div>
+        <p class="kicker">07 / Live · 1 z 5</p>
+        <h2>EAGER</h2>
+        <p class="lead">Cały graf od razu.</p>
+        <ul class="talking-points"><li><code>findAll()</code> z użytkownikiem, egzemplarzem, książką i autorami.</li><li>Koszt pobrania powiązanych encji i ich relacji.</li><li>Złączenia mogą powielać wiersze SQL.</li></ul>
+        <p class="small">Uwaga: wariant może zużyć dużo pamięci.</p>
+      </div>
+      <div class="live-slot"></div>
+    </section>
+
+    <section class="slide experiment" data-variant="LAZY" aria-label="Eksperyment LAZY">
+      <div>
+        <p class="kicker">08 / Live · 2 z 5</p>
+        <h2>LAZY</h2>
+        <p class="lead">Encje bez grafu relacji.</p>
+        <ul class="talking-points"><li><code>findAll()</code> bez grafu encji.</li><li>Relacje pozostają niezainicjalizowane.</li><li>Inny zakres danych niż w EAGER.</li></ul>
+      </div>
+      <div class="live-slot"></div>
+    </section>
+
+    <section class="slide experiment" data-variant="HIBERNATE_STREAM" aria-label="Eksperyment Hibernate Stream">
+      <div>
+        <p class="kicker">09 / Live · 3 z 5</p>
+        <h2>Hibernate<br>Stream</h2>
+        <p class="lead">Strumień bez czyszczenia kontekstu.</p>
+        <ul class="talking-points"><li>Encje przetwarzane w locie, <code>readOnly</code> i <code>fetchSize = 1000</code>.</li><li>Persistence context pozostaje aktywny przez cały odczyt.</li><li>Kontekst może rosnąć wraz z liczbą rekordów.</li></ul>
+      </div>
+      <div class="live-slot"></div>
+    </section>
+
+    <section class="slide experiment" data-variant="HIBERNATE_BATCH" aria-label="Eksperyment Hibernate Batch">
+      <div>
+        <p class="kicker">10 / Live · 4 z 5</p>
+        <h2>Hibernate<br>Batch</h2>
+        <p class="lead">Strumień z czyszczeniem kontekstu.</p>
+        <ul class="talking-points"><li><code>readOnly</code>, <code>fetchSize = 1000</code> i przetwarzanie w locie.</li><li><code>EntityManager.clear()</code> co 1000 rekordów.</li><li>Ograniczamy narastanie kontekstu; to nie wsadowy zapis.</li></ul>
+      </div>
+      <div class="live-slot"></div>
+    </section>
+
+    <section class="slide experiment" data-variant="JDBC_BATCH" aria-label="Eksperyment JDBC Batch">
+      <div>
+        <p class="kicker">11 / Live · 5 z 5</p>
+        <h2>JDBC<br>Batch</h2>
+        <p class="lead">Kursor zamiast encji.</p>
+        <ul class="talking-points"><li>Jawny SQL i <code>fetchSize = 1000</code>.</li><li>Mapowanie wypożyczeń, użytkowników, książek i autorów w locie.</li><li>Bez encji Hibernate i persistence context.</li></ul>
+      </div>
+      <div class="live-slot"></div>
+    </section>
+
+    <section class="slide" aria-label="Podsumowanie">
+      <p class="kicker">12 / Wnioski</p>
+      <h2>Ten sam cel.<br>Różne koszty.</h2>
+      <div class="columns">
+        <div class="card"><span class="number">ZAKRES</span><h3>Co pobieramy?</h3><p>Graf relacji i same wypożyczenia to różne ilości danych.</p></div>
+        <div class="card"><span class="number">KONTEKST</span><h3>Co zatrzymujemy?</h3><p>Strumień encji nie oznacza automatycznie stałego zużycia pamięci.</p></div>
+        <div class="card"><span class="number">POMIAR</span><h3>Co naprawdę mierzymy?</h3><p>Porównuj wyniki w tych samych warunkach, pamiętając o wpływie JVM i GC.</p></div>
+      </div>
+    </section>
+  </main>
+  <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+  <nav class="navigation" aria-label="Nawigacja prezentacji">
+    <span class="nav-info">Nawigacja: ← → lub przyciski po prawej</span>
+    <div class="nav-actions">
+      <button class="nav-button" id="previous" type="button" aria-label="Poprzedni slajd">←</button>
+      <span id="counter" aria-live="polite"></span>
+      <button class="nav-button" id="next" type="button" aria-label="Następny slajd">→</button>
+    </div>
+  </nav>
+</div>
+
+<template id="live-template">
+  <div class="live">
+    <div class="live-head"><strong>Doświadczenie live</strong><span class="status" id="status" role="status" aria-live="polite">Gotowe</span></div>
+    <div class="live-body">
+      <label class="field-label" for="base-url">Adres bazowy API</label>
+      <input id="base-url" type="url" spellcheck="false">
+      <div class="request">
+        <button class="run" id="run" type="button" aria-label="Uruchom żądanie POST"><span class="triangle" aria-hidden="true"></span></button>
+        <code><b>POST</b> <span id="request-url"></span></code>
+      </div>
+      <div class="console-heading"><span class="console-label">Polecenie cURL</span><button class="copy" id="copy" type="button">Kopiuj</button></div>
+      <pre id="curl"></pre>
+      <div class="console-heading"><span class="console-label" id="response-label">Odpowiedź serwera</span></div>
+      <pre id="response" aria-live="polite">Oczekiwanie na uruchomienie żądania.</pre>
+      <div class="meta"><span id="http-status">HTTP —</span><span id="elapsed">Czas —</span></div>
+      <p class="live-hint">Odpowiedź pojawia się po zakończeniu odczytu; postęp jest dostępny w logach serwera. Inny serwer wymaga CORS.</p>
+    </div>
+  </div>
+</template>
+<script>
+  (() => {
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const previous = document.getElementById("previous");
+    const next = document.getElementById("next");
+    const counter = document.getElementById("counter");
+    const progress = document.getElementById("progress");
+    const live = document.getElementById("live-template").content.firstElementChild.cloneNode(true);
+    const baseInput = live.querySelector("#base-url");
+    const runButton = live.querySelector("#run");
+    const requestUrl = live.querySelector("#request-url");
+    const curl = live.querySelector("#curl");
+    const copy = live.querySelector("#copy");
+    const status = live.querySelector("#status");
+    const responseLabel = live.querySelector("#response-label");
+    const response = live.querySelector("#response");
+    const httpStatus = live.querySelector("#http-status");
+    const elapsed = live.querySelector("#elapsed");
+    let current = 0;
+    let running = false;
+    let command = "";
+
+    baseInput.value = location.protocol === "http:" || location.protocol === "https:"
+      ? location.origin : "http://localhost:8080";
+
+    function endpoint(variant) {
+      let base;
+      try {
+        base = new URL(baseInput.value.trim());
+      } catch {
+        throw new Error("Podaj poprawny adres bazowy API.");
+      }
+      if (!["http:", "https:"].includes(base.protocol) || base.username || base.password || base.search || base.hash) {
+        throw new Error("Użyj adresu HTTP lub HTTPS bez danych logowania, parametrów i fragmentu.");
+      }
+      return base.href.replace(/\/+$/, "") + "/api/wypozyczenia/odczyt/" + variant;
+    }
+
+    function updateRequest() {
+      const variant = slides[current].dataset.variant;
+      if (!variant) return;
+      runButton.setAttribute("aria-label", "Uruchom POST " + variant);
+      try {
+        const url = endpoint(variant);
+        requestUrl.textContent = url;
+        command = "curl -X POST '" + url.replace(/'/g, "'\\''") + "'";
+        curl.textContent = command;
+      } catch (error) {
+        requestUrl.textContent = error.message;
+        command = "";
+        curl.textContent = "Podaj poprawny adres bazowy API.";
+      }
+    }
+
+    function showSlide(index, updateHash = true) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => {
+        slide.classList.toggle("active", i === current);
+        slide.setAttribute("aria-hidden", i === current ? "false" : "true");
+      });
+      const slot = slides[current].querySelector(".live-slot");
+      if (slot) {
+        slot.appendChild(live);
+        updateRequest();
+      }
+      previous.disabled = current === 0;
+      next.disabled = current === slides.length - 1;
+      counter.textContent = (current + 1) + " / " + slides.length;
+      progress.style.width = ((current + 1) / slides.length * 100) + "%";
+      document.title = slides[current].getAttribute("aria-label") + " — Odczyt wypożyczeń";
+      if (updateHash) history.replaceState(null, "", "#slajd-" + (current + 1));
+      window.scrollTo(0, 0);
+    }
+
+    function slideFromHash() {
+      const match = /^#slajd-(\d+)$/.exec(location.hash);
+      return match ? Math.max(0, Math.min(slides.length - 1, Number(match[1]) - 1)) : 0;
+    }
+
+    function setStatus(text, state = "") {
+      status.textContent = text;
+      status.className = "status" + (state ? " " + state : "");
+    }
+
+    async function run() {
+      if (running) return;
+      const variant = slides[current].dataset.variant;
+      let url;
+      try {
+        url = endpoint(variant);
+      } catch (error) {
+        setStatus("Nieprawidłowy adres", "error");
+        responseLabel.textContent = "Odpowiedź serwera";
+        response.textContent = error.message;
+        httpStatus.textContent = "HTTP —";
+        elapsed.textContent = "Czas —";
+        return;
+      }
+      running = true;
+      runButton.disabled = true;
+      baseInput.disabled = true;
+      setStatus("Wysyłanie: " + variant, "running");
+      responseLabel.textContent = "Odpowiedź: " + variant;
+      response.textContent = "Oczekiwanie na odpowiedź serwera…";
+      httpStatus.textContent = "HTTP —";
+      const start = performance.now();
+      const updateTime = () => { elapsed.textContent = "Czas " + ((performance.now() - start) / 1000).toFixed(1) + " s"; };
+      updateTime();
+      const timer = setInterval(updateTime, 100);
+      try {
+        const result = await fetch(url, { method: "POST" });
+        httpStatus.textContent = "HTTP " + result.status + (result.statusText ? " " + result.statusText : "");
+        const text = await result.text();
+        if (text) {
+          try { response.textContent = JSON.stringify(JSON.parse(text), null, 2); }
+          catch { response.textContent = text; }
+        } else {
+          response.textContent = "(Pusta odpowiedź)";
+        }
+        setStatus(result.ok ? "Zakończono: " + variant : "Błąd HTTP: " + variant, result.ok ? "success" : "error");
+      } catch (error) {
+        setStatus("Błąd połączenia: " + variant, "error");
+        response.textContent = "Nie udało się odczytać odpowiedzi: " + error.message +
+          "\n\nSprawdź serwer i konfigurację CORS. Przeglądarka może blokować HTTP ze strony HTTPS.";
+      } finally {
+        clearInterval(timer);
+        updateTime();
+        running = false;
+        runButton.disabled = false;
+        baseInput.disabled = false;
+      }
+    }
+
+    previous.addEventListener("click", () => showSlide(current - 1));
+    next.addEventListener("click", () => showSlide(current + 1));
+    document.addEventListener("keydown", event => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.target.isContentEditable ||
+          /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(event.target.tagName)) return;
+      if (event.key === "ArrowRight" || event.key === "PageDown") {
+        event.preventDefault();
+        showSlide(current + 1);
+      } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        showSlide(current - 1);
+      }
+    });
+    window.addEventListener("hashchange", () => showSlide(slideFromHash(), false));
+    baseInput.addEventListener("input", updateRequest);
+    runButton.addEventListener("click", run);
+    copy.addEventListener("click", async () => {
+      if (!command) {
+        copy.textContent = "Nieprawidłowy adres";
+      } else {
+        try {
+          await navigator.clipboard.writeText(command);
+          copy.textContent = "Skopiowano";
+        } catch {
+          copy.textContent = "Skopiuj tekst ręcznie";
+        }
+      }
+      setTimeout(() => { copy.textContent = "Kopiuj"; }, 2000);
+    });
+    showSlide(slideFromHash(), false);
+  })();
+</script>
+</body>
+</html>
