@@ -1,7 +1,6 @@
 <!doctype html>
-<html lang="pl">
-<head>
-  <meta charset="utf-8">
+<html lang="pl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Strumienie zamiast powodzi</title>
   <style>
@@ -50,6 +49,10 @@
     .cover h1 span { color: #FFC326; }
     .cover-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
     .tag { background: #f0f4ff; color: #A30051; border-radius: 100px; padding: 8px 14px; font-size: 13px; font-weight: 700; }
+    .section-cover { justify-content: center; }
+    .section-cover::before { content: ""; height: 7px; width: 75px; background: #A30051; border-radius: 10px; margin-bottom: 35px; }
+    .section-cover h2 { font-size: clamp(38px, 5.3vw, 76px); letter-spacing: -.055em; line-height: 1.03; max-width: 950px; margin-bottom: 25px; }
+    .section-cover h2 span { color: #A30051; }
     .about-slide { justify-content: center; }
     .about-slide::before { content: ""; height: 7px; width: 75px; background: #A30051; border-radius: 10px; margin-bottom: 28px; }
     .about-layout { display: grid; grid-template-columns: 240px minmax(0, 1.2fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
@@ -69,16 +72,47 @@
     .linkedin-link:hover { text-decoration: underline; }
     .linkedin-link:focus-visible { outline: 3px solid #ffb2d8; outline-offset: 4px; border-radius: 3px; }
     .content { flex: 1; min-height: 0; }
+    .gc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; height: 100%; }
+    .gc-card { display: flex; flex-direction: column; justify-content: center; min-height: 190px; padding: clamp(20px, 2.5vw, 34px); background: #f8f9fc; border: 1px solid #e6ebf4; border-radius: 18px; }
+    .gc-icon { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 18px; color: #A30051; background: #fceaf3; border-radius: 15px; }
+    .gc-icon svg { width: 27px; height: 27px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .gc-card h3 { margin: 0 0 8px; color: #17243b; font-size: clamp(18px, 1.8vw, 24px); letter-spacing: -.025em; }
+    .gc-card p { margin: 0; color: #64728a; font-size: clamp(14px, 1.25vw, 17px); line-height: 1.45; }
+    .orm-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; height: 100%; }
+    .orm-card { min-height: 0; }
+    .state-diagram { display: flex; flex-direction: column; min-height: 0; }
+    .state-canvas { flex: 1; min-height: 0; display: grid; place-items: center; }
+    .state-svg { display: block; width: 100%; max-height: 100%; }
+    .state-item { cursor: grab; touch-action: none; }
+    .state-item:active { cursor: grabbing; }
+    .state-item:focus-visible .state-node { stroke: #a30051; stroke-width: 4; }
+    .state-editor { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; color: #64728a; font-size: 13px; }
+    .state-editor button { border: 1px solid #d5deeb; border-radius: 8px; background: white; color: #79003c; padding: 7px 12px; cursor: pointer; }
+    .state-editor button:hover { border-color: #a30051; }
+    .state-editor .state-edit-toggle { display: none; }
+    .state-status { color: #43516a; }
+    .state-node { fill: #f8f9fc; stroke: #e6ebf4; stroke-width: 2; }
+    .state-node.managed { fill: #fceaf3; stroke: #efb5d1; }
+    .state-node.removed { fill: #fff8e6; stroke: #f1d98e; }
+    .state-title { fill: #17243b; font-size: 23px; font-weight: 750; }
+    .state-description { fill: #64728a; font-size: 17px; }
+    .state-path { fill: none; stroke: #a30051; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#state-arrow); }
+    .state-label-bg { fill: #fff; stroke: #e6ebf4; stroke-width: 1; }
+    .state-label { fill: #79003c; font-size: 15px; font-weight: 700; text-anchor: middle; }
+    .state-label-small { font-size: 12px; }
+    .state-mobile { display: none; }
+    .state-step { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); align-items: center; gap: 8px; padding: 11px 14px; background: #f8f9fc; border: 1px solid #e6ebf4; border-radius: 12px; }
+    .state-step strong { font-size: 14px; }
+    .state-step > span:nth-child(2) { color: #a30051; text-align: center; font-size: 20px; font-weight: 800; }
+    .state-step small { grid-column: 1 / -1; color: #64728a; font-size: 12px; line-height: 1.4; }
+    .state-step code { font-size: 12px; }
     .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 50px); align-items: start; }
     ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
     li { position: relative; padding-left: 22px; color: #43516a; font-size: clamp(15px, 1.35vw, 19px); line-height: 1.42; }
     li::before { content: ""; position: absolute; left: 0; top: .55em; width: 8px; height: 8px; border-radius: 50%; background: #FFB2D8; }
     strong { color: #17243b; }
     code { font-family: Consolas, "Courier New", monospace; font-size: .88em; color: #79003c; background: #f1f5ff; padding: .12em .3em; border-radius: 4px; overflow-wrap: anywhere; }
-    .panel { background: #f6f8fc; border: 1px solid #e6ebf4; border-radius: 16px; padding: 23px; }
-    .diagram { overflow: auto; margin: 0; color: #33435f; font: clamp(10px, .85vw, 13px)/1.35 Consolas, "Courier New", monospace; white-space: pre; }
     .note { margin: 16px 0 0; color: #718099; font-size: 13px; line-height: 1.45; }
-    .footer { margin-top: auto; padding-top: 24px; color: #96a2b5; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
     .request { max-width: 930px; }
     .request-intro { color: #64728a; font-size: 17px; line-height: 1.5; }
     .endpoint { display: flex; gap: 14px; align-items: center; padding: 16px 20px; background: #f6f8fc; border: 1px solid #e6ebf4; border-radius: 12px; overflow-wrap: anywhere; }
@@ -108,13 +142,28 @@
       .about-layout { grid-template-columns: 140px minmax(0, 1fr); gap: 20px; }
       .about-portrait { max-height: 220px; aspect-ratio: 3 / 4; }
       .about-details h2 { font-size: clamp(30px, 5vw, 40px); }
-      .about-name { font-size: 24px; margin-bottom: 16px; }}
+      .about-name { font-size: 24px; margin-bottom: 16px; }
       .about-role, .about-scouting { gap: 10px; }
       .alior-logo { width: 82px; }
       .scout-logos { gap: 4px; }
       .scout-lily { width: 36px; height: 44px; }
       .scout-badge { width: 38px; height: 38px; }
       .linkedin-link { margin-top: 18px; }
+      .gc-grid { gap: 12px; }
+      .gc-card { min-height: 165px; padding: 18px; }
+      .gc-icon { width: 44px; height: 44px; margin-bottom: 12px; }
+      .orm-grid { grid-template-columns: 1fr; gap: 10px; }
+      .orm-card { display: grid; grid-template-columns: 44px minmax(0, 1fr); grid-template-rows: auto auto; align-content: center; align-items: center; column-gap: 14px; padding: 14px 18px; }
+      .orm-card .gc-icon { grid-row: 1 / 3; margin: 0; }
+      .orm-card h3 { margin-bottom: 4px; }
+      .state-diagram { display: flex; overflow: auto; }
+      .state-canvas { display: none; }
+      .state-mobile { display: grid; gap: 8px; }
+      .state-diagram.editing .state-canvas { display: block; flex: none; overflow: auto; }
+      .state-diagram.editing .state-svg { min-width: 850px; max-height: none; }
+      .state-diagram.editing .state-mobile { display: none; }
+      .state-editor { margin-bottom: 10px; }
+      .state-editor .state-edit-toggle { display: inline-block; }
       .diagram { font-size: 11px; }
       .footer { padding-top: 32px; }
       .toolbar-hint { display: none; }
@@ -124,6 +173,9 @@
       .deck { width: 100%; }
       .slide, .slide.active { display: flex; flex-direction: column; width: 100%; min-height: 0; height: 100vh; aspect-ratio: auto; border: 0; border-radius: 0; box-shadow: none; break-after: page; overflow: hidden; }
       .slide:last-of-type { break-after: auto; }
+      .state-editor { display: none; }
+      .state-canvas { display: grid; }
+      .state-mobile { display: none; }
       .toolbar, .progress, .request-actions { display: none; }
     }
   </style>
@@ -140,21 +192,21 @@
   <section class="slide about-slide" aria-label="O mnie">
     <p class="eyebrow">O mnie</p>
     <div class="about-layout">
-      <img class="about-portrait" src="zdjecie_Bartosz_Błyszcz.jpg" alt="Bartosz Błyszcz" style="width: 200px; !important;">
+      <img class="about-portrait" src="./prezentacja_files/zdjecie_Bartosz_Błyszcz.jpg" alt="Bartosz Błyszcz" style="width: 200px; !important;">
       <div class="about-details">
         <h2>Senior Software Developer<br><span style="color: #96a364">Instruktor w ZHR</span></h2>
         <p class="about-name">Bartosz Błyszcz</p>
         <div class="about-role">
-          <img class="alior-logo" src="logo_alior.png" alt="Alior Bank">
+          <img class="alior-logo" src="./prezentacja_files/logo_alior.png" alt="Alior Bank">
           <p><strong>Senior Software Developer</strong>Alior Bank</p>
         </div>
         <div class="about-scouting">
           <div class="scout-logos">
-            <img class="scout-lily" src="lilijka_bezcienia.png" alt="Lilijka ZHR">
+            <img class="scout-lily" src="./prezentacja_files/lilijka_bezcienia.png" alt="Lilijka ZHR">
           </div>
           <p><strong>Prowadzący Kręgu Harcerstwa Starszego <span style="color: #FFC326;">"Źródło"</span></strong>ZHR</p>
         </div>
-        <a class="linkedin-link" href="https://www.linkedin.com/in/bartosz-blyszcz/" target="_blank" rel="noopener noreferrer"><img src="linkedin-svgrepo-com.svg" alt="LinkedIn" style="height: 20px"/> bartosz-blyszcz</a>
+        <a class="linkedin-link" href="https://www.linkedin.com/in/bartosz-blyszcz/" target="_blank" rel="noopener noreferrer"><img src="./prezentacja_files/linkedin-svgrepo-com.svg" alt="LinkedIn" style="height: 20px"> bartosz-blyszcz</a>
       </div>
     </div>
   </section>
@@ -165,161 +217,187 @@
       <div>
         <ul>
           <li>JVM uruchamia bytecode Java i zarządza jego wykonaniem.</li>
-          <li><strong>Heap</strong> — obiekty i encje; współdzielony przez wątki.</li>
-          <li><strong>Stosy wątków</strong> — ramki metod, zmienne lokalne i odwołania.</li>
-          <li><strong>Metaspace</strong> — metadane klas; poza heapem.</li>
-          <li><strong>PC i stos natywny</strong> — stan wykonywania wątku oraz obsługa metod natywnych.</li>
-          <li>Pamięć natywna obejmuje m.in. bufory bezpośrednie i zasoby JVM.</li>
+          <li><strong>Heap</strong> — obiekty i encje; współdzielony przez wątki.
+              <ul>
+                <li><strong>Young</strong> — nowe obiekty i encje</li>
+                <li><strong>Old</strong> — stare obiekty i encje</li>
+              </ul>
+          </li>
         </ul>
-        <p class="note">Podział heapu na generacje jest typowy, ale szczegóły zależą od JVM i garbage collectora.</p>
       </div>
-      <div class="panel"><pre class="diagram">                  JVM
-  +--------------------------------------+
-  | Współdzielone obszary                |
-  |  Heap (obiekty i tablice; GC)        |
-  |   +------------------------------+   |
-  |   | Young generation             |   |
-  |   |  Eden | Survivor 0 | Survivor 1|  |
-  |   +------------------------------+   |
-  |   | Old generation               |   |
-  |   +------------------------------+   |
-  |  Metaspace / obszar metod            |
-  |   metadane klas                      |
-  +--------------------------------------+
-  | Wątek A              | Wątek B       |
-  | Java stack           | Java stack    |
-  | PC register          | PC register   |
-  | Native method stack  | Native stack  |
-  +--------------------------------------+
-  | Pamięć natywna, np. bufory direct    |
-  +--------------------------------------+</pre></div>
+      <div>
+        <img src="./prezentacja_files/jvm.png" style="height: 500px">
+      </div>
     </div>
   </section>
 
   <section class="slide" aria-label="Slajd 4">
     <p class="eyebrow">01 / Podstawy</p><h2>Garbage Collector</h2>
-    <div class="content"><ul>
-      <li>Odzyskuje pamięć obiektów na heapie, które nie są już osiągalne.</li>
-      <li>Działa automatycznie; moment uruchomienia i odzyskania pamięci nie jest gwarantowany.</li>
-      <li>Nie zwalnia zasobów zewnętrznych, takich jak połączenia czy strumienie — te należy zamykać.</li>
-      <li>Pomiar zajętości heapu przed i po odczycie jest chwilowy, zależny m.in. od GC; nie pokazuje szczytowego zużycia.</li>
-    </ul></div>
+    <div class="content gc-grid">
+      <article class="gc-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v3m0 12v3M4.6 6.6l2.1 2.1m10.6 10.6 2.1 2.1M3 12h3m12 0h3M4.6 17.4l2.1-2.1M17.3 6.7l2.1-2.1"></path><circle cx="12" cy="12" r="5"></circle></svg></span>
+        <h3>Automatyczne porządki</h3>
+        <p>GC zarządza pamięcią i odzyskuje miejsce po obiektach, których aplikacja już nie używa.</p>
+      </article>
+      <article class="gc-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 7h10v10H7z"></path><path d="M4 4v4h4m12 12v-4h-4M8 4h8m4 8v4M16 20H8m-4-8V8"></path></svg></span>
+        <h3>Żywe obiekty w ruchu</h3>
+        <p>Podczas porządkowania GC może przenieść używane obiekty w inne miejsce pamięci.</p>
+      </article>
+      <article class="gc-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 8h14v12H5zM8 8V5a4 4 0 0 1 8 0v3"></path><path d="M12 12v4"></path></svg></span>
+        <h3>Zasoby zamykasz Ty</h3>
+        <p>Połączenia i strumienie nie są sprzątane przez GC — zamykaj je jawnie.</p>
+      </article>
+      <article class="gc-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4v6m8-6v6M6 10h12v2a6 6 0 0 1-12 0zM12 18v3m-4 0h8"></path></svg></span>
+        <h3>Stop the World</h3>
+        <p>Na czas niektórych faz GC wszystkie wątki aplikacji zostają wstrzymane.</p>
+      </article>
+    </div>
   </section>
 
   <section class="slide" aria-label="Slajd 5">
     <p class="eyebrow">01 / Podstawy</p><h2>ORM</h2>
-    <div class="content"><ul>
-      <li>ORM mapuje tabele i kolumny relacyjnej bazy na obiekty i pola w aplikacji.</li>
-      <li>JPA definiuje standard mapowania; Hibernate jest jego implementacją używaną w projekcie.</li>
-      <li>Relacje encji mogą być ładowane od razu (<strong>EAGER</strong>) lub na żądanie (<strong>LAZY</strong>).</li>
-      <li>Persistence context śledzi encje i zarządza ich stanem w ramach pracy z bazą.</li>
-      <li>Zaleta: praca na obiektach; koszt: dodatkowe zapytania, obiekty i pamięć.</li>
-    </ul></div>
+    <div class="content orm-grid">
+      <article class="gc-card orm-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v5H4zM4 14h7v5H4z"></path><path d="M14 14h6m-3-3v8"></path></svg></span>
+        <h3>Mapowanie obiektów</h3>
+        <p>ORM odwzorowuje tabele i kolumny relacyjnej bazy na obiekty i pola w aplikacji.</p>
+      </article>
+      <article class="gc-card orm-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2m4-8 2-2"></path></svg></span>
+        <h3>Kontekst persystencji</h3>
+        <p>Śledzi encje i zarządza ich stanem podczas pracy z bazą danych.</p>
+      </article>
+      <article class="gc-card orm-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 7h10v10H7z"></path><path d="M4 4v4h4m12 12v-4h-4M12 4v4m0 8v4"></path></svg></span>
+        <h3>Operacje CRUD</h3>
+        <p>Ułatwia tworzenie, odczyt, aktualizowanie i usuwanie danych przez obiekty.</p>
+      </article>
+    </div>
   </section>
 
   <section class="slide" aria-label="Slajd 6">
-    <p class="eyebrow">01 / Podstawy</p><h2>Stany encji Hibernate</h2>
-    <div class="content"><ul>
-      <li><strong>Transient / new</strong> — nowy obiekt, nieśledzony przez persistence context.</li>
-      <li><strong>Managed / persistent</strong> — encja śledzona; zmiany mogą zostać zapisane przy flush/commit.</li>
-      <li><strong>Detached</strong> — encja odłączona; zmiany nie są automatycznie śledzone.</li>
-      <li><strong>Removed</strong> — encja oznaczona do usunięcia przy flush/commit.</li>
-      <li>Przykładowe przejścia: <code>persist</code> → managed, <code>detach</code>/<code>clear</code> → detached, <code>remove</code> → removed.</li>
-    </ul></div>
+    <p class="eyebrow">01 / Podstawy</p><h2>Hibernate</h2>
+    <div class="content state-diagram">
+      <div class="state-editor">
+        <button type="button" class="state-edit-toggle" aria-pressed="false">Edytuj diagram</button>
+        <button type="button" class="state-save">Zapisz układ w HTML</button>
+        <span></span>
+        <span class="state-status" role="status" aria-live="polite"></span>
+      </div>
+      <div class="state-canvas">
+      <svg class="state-svg" viewBox="0 0 1200 500" role="group" aria-labelledby="state-title" aria-describedby="state-description">
+        <title id="state-title">Diagram stanów encji Hibernate</title>
+        <desc id="state-description">Początek prowadzi do stanu transient po utworzeniu nowego obiektu lub persistent po pobraniu przez find. Dalej encja przechodzi między stanami persistent, detached i removed.</desc>
+        <defs>
+          <marker id="state-arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth">
+            <path d="M0 0L10 5L0 10z" fill="#a30051"></path>
+          </marker>
+        </defs>
+        <g id="hibernate-state-diagram">
+          <g id="state-connections">
+            <g id="transition-new" data-from="state-start" data-to="state-transient" data-from-side="top" data-to-side="left" data-label="new" data-width="70"><path class="state-path" d="M102.5 195 C102.5 88.33873711604573 168.33873711604573 69.5 275 69.5"></path><rect class="state-label-bg" x="113.75202641851715" y="77.25202641851715" width="70" height="30" rx="15"></rect><text class="state-label" x="148.75202641851715" y="97.25202641851715">new</text></g>
+            <g id="transition-find" data-from="state-start" data-to="state-persistent" data-from-side="right" data-to-side="left" data-label="find()" data-width="90"><path class="state-path" d="M205 247.5 C308.03033533867585 247.5 307.96966466132415 252.5 411 252.5"></path><rect class="state-label-bg" x="263" y="235" width="90" height="30" rx="15"></rect><text class="state-label" x="308" y="255">find()</text></g>
+            <g id="transition-persist-new" data-from="state-transient" data-to="state-persistent" data-from-side="right" data-to-side="top" data-label="persist()" data-width="100"><path class="state-path" d="M505 69.5 C571.2995098021094 69.5 528.5 133.70049019789062 528.5 200"></path><rect class="state-label-bg" x="491.61231617579097" y="94.88768382420898" width="100" height="30" rx="15"></rect><text class="state-label" x="541.612316175791" y="114.88768382420898">persist()</text></g>
+            <g id="transition-detach" data-from="state-persistent" data-to="state-detached" data-from-side="right" data-from-position="0.3" data-to-side="left" data-label="detach() / clear() / close()" data-width="205"><path class="state-path" d="M646 231.5 C773.1662297939197 231.5 736.8337702060803 100.5 864 100.5"></path><rect class="state-label-bg" x="652.5" y="151" width="205" height="30" rx="15"></rect><text class="state-label state-label-small" x="755" y="171">detach() / clear() / close()</text></g>
+            <g id="transition-merge" data-from="state-detached" data-to="state-persistent" data-from-side="bottom" data-to-side="right" data-to-position="0.7" data-label="merge()" data-width="100"><path class="state-path" d="M976.5 153 C976.5 293 786 273.5 646 273.5"></path><rect class="state-label-bg" x="813.75" y="250.75" width="100" height="30" rx="15"></rect><text class="state-label" x="863.75" y="270.75">merge()</text></g>
+            <g id="transition-remove" data-from="state-persistent" data-to="state-removed" data-from-side="bottom" data-to-side="top" data-label="remove()" data-label-dx="60" data-width="100"><path class="state-path" d="M528.5 305 C528.5 355 540.5 345 540.5 395"></path><rect class="state-label-bg" x="544.5" y="335" width="100" height="30" rx="15"></rect><text class="state-label" x="594.5" y="355">remove()</text></g>
+            <g id="transition-persist-removed" data-from="state-removed" data-to="state-persistent" data-from-side="left" data-to-side="left" data-to-position="0.8" data-label="persist()" data-width="100"><path class="state-path" d="M423 447.5 C341.03011223626083 447.5 329.03011223626083 284 411 284"></path><rect class="state-label-bg" x="305.52258417719565" y="350.75" width="100" height="30" rx="15"></rect><text class="state-label" x="355.52258417719565" y="370.75">persist()</text></g>
+          </g>
+          <g id="state-start" class="state-item" transform="translate(-35 0)" tabindex="0" role="button" aria-label="Początek. Przesuń strzałkami.">
+            <rect class="state-node" x="35" y="195" width="205" height="105" rx="18"></rect>
+            <text class="state-title" x="137" y="239" text-anchor="middle">0 / Początek</text>
+            <text class="state-description" x="137" y="270" text-anchor="middle">brak encji w kontekście</text>
+          </g>
+          <g id="state-transient" class="state-item" transform="translate(-75 -38)" tabindex="0" role="button" aria-label="Transient. Przesuń strzałkami.">
+            <rect class="state-node" x="350" y="55" width="230" height="105" rx="18"></rect>
+            <text class="state-title" x="465" y="99" text-anchor="middle">Transient</text>
+            <text class="state-description" x="465" y="130" text-anchor="middle">nowy, nieśledzony obiekt</text>
+          </g>
+          <g id="state-persistent" class="state-item" transform="translate(-199 5)" tabindex="0" role="button" aria-label="Persistent. Przesuń strzałkami.">
+            <rect class="state-node managed" x="610" y="195" width="235" height="105" rx="18"></rect>
+            <text class="state-title" x="727" y="239" text-anchor="middle">Persistent</text>
+            <text class="state-description" x="727" y="270" text-anchor="middle">śledzony przez kontekst</text>
+          </g>
+          <g id="state-detached" class="state-item" transform="translate(-81 -7)" tabindex="0" role="button" aria-label="Detached. Przesuń strzałkami.">
+            <rect class="state-node" x="945" y="55" width="225" height="105" rx="18"></rect>
+            <text class="state-title" x="1057" y="99" text-anchor="middle">Detached</text>
+            <text class="state-description" x="1057" y="130" text-anchor="middle">odłączony od kontekstu</text>
+          </g>
+          <g id="state-removed" class="state-item" transform="translate(-242 30)" tabindex="0" role="button" aria-label="Removed. Przesuń strzałkami.">
+            <rect class="state-node removed" x="665" y="365" width="235" height="105" rx="18"></rect>
+            <text class="state-title" x="782" y="409" text-anchor="middle">Removed</text>
+            <text class="state-description" x="782" y="440" text-anchor="middle">oznaczony do usunięcia</text>
+          </g>
+        </g>
+      </svg>
+      </div>
+      <p class="note">merge() zwraca śledzoną kopię; oryginał pozostaje detached.</p>
+      <div class="state-mobile" aria-label="Przejścia między stanami encji">
+        <div class="state-step"><strong>0 / Początek</strong><span>→</span><strong>Transient</strong><small><code>new</code> — utworzenie obiektu bez pobierania go z bazy.</small></div>
+        <div class="state-step"><strong>0 / Początek</strong><span>→</span><strong>Persistent</strong><small><code>find()</code> — pobranie istniejącej encji do kontekstu persystencji.</small></div>
+        <div class="state-step"><strong>Transient</strong><span>→</span><strong>Persistent</strong><small><code>persist()</code> — dodaje encję do kontekstu persystencji.</small></div>
+        <div class="state-step"><strong>Persistent</strong><span>→</span><strong>Detached</strong><small><code>detach()</code>, <code>clear()</code> lub zamknięcie kontekstu — odłącza encję.</small></div>
+        <div class="state-step"><strong>Detached</strong><span>→</span><strong>Persistent</strong><small><code>merge()</code> — zwraca śledzoną kopię; oryginał pozostaje detached.</small></div>
+        <div class="state-step"><strong>Persistent</strong><span>→</span><strong>Removed</strong><small><code>remove()</code> — oznacza encję do usunięcia przy flush/commit.</small></div>
+        <div class="state-step"><strong>Removed</strong><span>→</span><strong>Persistent</strong><small><code>persist()</code> — ponownie włącza usuniętą encję do kontekstu.</small></div>
+      </div>
+    </div>
   </section>
 
   <section class="slide" aria-label="Slajd 7">
     <p class="eyebrow">01 / Podstawy</p><h2>JdbcTemplate</h2>
-    <div class="content"><ul>
-      <li>Springowy interfejs do wykonywania jawnego SQL bez mapowania encji ORM.</li>
-      <li>Aplikacja określa kolumny, zapytanie i sposób mapowania wiersza na obiekt.</li>
-      <li>W projekcie <code>queryForStream</code> odczytuje strumieniowo kursor tylko do przodu.</li>
-      <li><code>fetchSize = 1000</code> jest wskazówką dla sterownika co do pobierania wierszy, nie liczbą zapytań SQL.</li>
-      <li>Strumień należy zamknąć; odczyt kursora PostgreSQL odbywa się w transakcji.</li>
-    </ul></div>
+    <div class="content gc-grid">
+      <article class="gc-card orm-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5 3 12l5 7M16 5l5 7-5 7M14 4l-4 16"></path></svg></span>
+        <h3>Jawny SQL</h3>
+        <p>Zapytania SQL są określane bezpośrednio w aplikacji.</p>
+      </article>
+      <article class="gc-card orm-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5h8v6H3zM14 13h7v6h-7zM7 11v5h4"></path><path d="m9 14 2 2-2 2"></path></svg></span>
+        <h3>Jawne mapowanie</h3>
+        <p>Aplikacja określa, jak wyniki zapytania są mapowane na obiekty.</p>
+      </article>
+      <article class="gc-card orm-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2M5 19 19 5"></path></svg></span>
+        <h3>Bez kontekstu persystencji</h3>
+        <p>JdbcTemplate nie śledzi stanu obiektów jak ORM.</p>
+      </article>
+      <article class="gc-card orm-card">
+        <span class="gc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4v6m8-6v6M6 10h12v2a6 6 0 0 1-12 0zM12 18v3m-4 0h8"></path></svg></span>
+        <h3>Praca ze sterownikiem</h3>
+        <p>JdbcTemplate korzysta ze sterownika JDBC do komunikacji z bazą danych.</p>
+      </article>
+    </div>
   </section>
 
-  <section class="slide" aria-label="Slajd 8">
-    <p class="eyebrow">02 / Porównanie</p><h2>Założenia doświadczenia</h2>
-    <div class="content"><ul>
-      <li>Porównanie pięciu sposobów odczytu całej tabeli <code>wypozyczenia</code>.</li>
-      <li>Każdy request uruchamia osobną transakcję tylko do odczytu; warianty należy uruchamiać pojedynczo.</li>
-      <li>Wspólny punkt porównania: liczba wierszy i suma kontrolna złożona z UUID oraz daty wypożyczenia.</li>
-      <li>Rejestrowane są czas odczytu i chwilowa zajętość heapu przed i po.</li>
-      <li>Wyniki zależą m.in. od JVM, GC, sterownika, bazy i rozgrzania aplikacji; pomiar pamięci nie jest maksimum.</li>
-      <li>Czas nie obejmuje zatwierdzenia transakcji ani wysłania odpowiedzi HTTP.</li>
-      <li>Odczyty nie są równoważne pod względem zakresu pobieranych danych: LAZY nie inicjalizuje relacji, a pozostałe warianty ładują również powiązane dane.</li>
-    </ul></div>
-  </section>
-
-  <section class="slide" aria-label="Slajd 9">
-    <p class="eyebrow">02 / Warianty odczytu</p><h2>EAGER</h2>
-    <div class="content"><ul>
-      <li><code>POST /api/wypozyczenia/odczyt/EAGER</code></li>
-      <li><code>findAll()</code> z grafem: użytkownik, egzemplarz, książka i autorzy.</li>
-      <li>Pokazuje koszt pobrania od razu powiązanego grafu encji.</li>
-      <li>Złączenia mogą powielać wiersze SQL, np. dla książek z wieloma autorami.</li>
-    </ul></div>
-  </section>
-
-  <section class="slide" aria-label="Slajd 10">
-    <p class="eyebrow">02 / Warianty odczytu</p><h2>LAZY</h2>
-    <div class="content"><ul>
-      <li><code>POST /api/wypozyczenia/odczyt/LAZY</code></li>
-      <li><code>findAll()</code> bez grafu encji; relacje pozostają niezaładowane.</li>
-      <li>Ładuje listę encji wypożyczeń, ale nie inicjalizuje ich relacji.</li>
-      <li>Porównanie z EAGER dotyczy innego zakresu pobieranych danych.</li>
-    </ul></div>
-  </section>
-
-  <section class="slide" aria-label="Slajd 11">
-    <p class="eyebrow">02 / Warianty odczytu</p><h2>HIBERNATE_STREAM</h2>
-    <div class="content"><ul>
-      <li><code>POST /api/wypozyczenia/odczyt/HIBERNATE_STREAM</code></li>
-      <li>Strumieniowy odczyt projekcji Hibernate obejmującej wypożyczenie, użytkownika, egzemplarz, książkę i autorów, z <code>readOnly</code> i <code>fetchSize = 1000</code>.</li>
-      <li>Przetwarzanie wierszy w locie; projekcja udostępnia pełny powiązany graf danych.</li>
-    </ul></div>
-  </section>
-
-  <section class="slide" aria-label="Slajd 12">
-    <p class="eyebrow">02 / Warianty odczytu</p><h2>HIBERNATE_BATCH</h2>
-    <div class="content"><ul>
-      <li><code>POST /api/wypozyczenia/odczyt/HIBERNATE_BATCH</code></li>
-      <li>Jak w strumieniu Hibernate: pełna projekcja wypożyczenia i powiązanych danych, <code>readOnly</code>, <code>fetchSize = 1000</code>, przetwarzanie w locie.</li>
-      <li>Dodatkowo <code>EntityManager.clear()</code> po każdych 1000 rekordów.</li>
-      <li>Czyszczenie ogranicza narastanie persistence context; nazwa wariantu nie oznacza wsadowego zapisu.</li>
-    </ul></div>
-  </section>
-
-  <section class="slide" aria-label="Slajd 13">
-    <p class="eyebrow">02 / Warianty odczytu</p><h2>JDBC_BATCH</h2>
-    <div class="content"><ul>
-      <li><code>POST /api/wypozyczenia/odczyt/JDBC_BATCH</code></li>
-      <li>Jawny SQL przez <code>JdbcTemplate</code>; kursor tylko do przodu i <code>fetchSize = 1000</code>.</li>
-      <li>Mapuje wypożyczenie, użytkownika, egzemplarz, książkę i autorów; wiersze są grupowane według pełnego klucza wypożyczenia.</li>
-      <li>Metadane książki są tekstem JSON; sortowanie potrzebne do grupowania może obciążać bazę.</li>
-      <li>Bez tworzenia encji Hibernate i persistence context.</li>
-    </ul></div>
+  <section class="slide section-cover" aria-label="Slajd 8">
+    <p class="eyebrow">02 / Doświadczenie</p>
+    <h2>Doświadczenia</h2>
+    <p class="subtitle">Porównanie sposobów odczytu danych z użyciem Hibernate i JDBC.</p>
+    <div class="cover-tags"><span class="tag">Hibernate</span><span class="tag">JDBC</span><span class="tag">Odczyt danych</span></div>
   </section>
 
   <section class="slide request-slide" aria-label="Slajd 14" data-url="http://localhost:8080/api/wypozyczenia/odczyt/EAGER">
-    <p class="eyebrow">03 / Uruchom odczyt</p><h2>List + EAGER</h2>
+    <p class="eyebrow">02 / Doświadczenie</p><h2>List + EAGER</h2>
     <div class="content request"></div>
   </section>
   <section class="slide request-slide" aria-label="Slajd 15" data-url="http://localhost:8080/api/wypozyczenia/odczyt/LAZY">
-    <p class="eyebrow">03 / Uruchom odczyt</p><h2>List + LAZY</h2>
+    <p class="eyebrow">02 / Doświadczenie</p><h2>List + LAZY</h2>
     <div class="content request"></div>
   </section>
   <section class="slide request-slide" aria-label="Slajd 16" data-url="http://localhost:8080/api/wypozyczenia/odczyt/HIBERNATE_STREAM">
-    <p class="eyebrow">03 / Uruchom odczyt</p><h2>STREAM</h2>
+    <p class="eyebrow">02 / Doświadczenie</p><h2>STREAM</h2>
     <div class="content request"></div>
   </section>
   <section class="slide request-slide" aria-label="Slajd 17" data-url="http://localhost:8080/api/wypozyczenia/odczyt/HIBERNATE_BATCH">
-    <p class="eyebrow">03 / Uruchom odczyt</p><h2>STREAM BATCH</h2>
+    <p class="eyebrow">02 / Doświadczenie</p><h2>STREAM BATCH</h2>
     <div class="content request"></div>
   </section>
   <section class="slide request-slide" aria-label="Slajd 18" data-url="http://localhost:8080/api/wypozyczenia/odczyt/JDBC_BATCH">
-    <p class="eyebrow">03 / Uruchom odczyt</p><h2>JDBC BATCH</h2>
+    <p class="eyebrow">02 / Doświadczenie</p><h2>JDBC BATCH</h2>
     <div class="content request"></div>
   </section>
 
@@ -373,6 +451,169 @@
     }
   });
 
+  const stateDiagram = document.querySelector(".state-diagram");
+  const stateSvg = stateDiagram.querySelector(".state-svg");
+  const stateItems = [...stateSvg.querySelectorAll(".state-item")];
+  const stateConnections = [...stateSvg.querySelectorAll("#state-connections > g")];
+  const stateStatus = stateDiagram.querySelector(".state-status");
+  const svgNamespace = "http://www.w3.org/2000/svg";
+
+  function stateOffset(item) {
+    const transform = item.transform.baseVal.consolidate();
+    return transform ? { x: transform.matrix.e, y: transform.matrix.f } : { x: 0, y: 0 };
+  }
+
+  function stateAnchor(item, side, position = 0.5) {
+    const rect = item.querySelector(".state-node");
+    const offset = stateOffset(item);
+    const x = Number(rect.getAttribute("x")) + offset.x;
+    const y = Number(rect.getAttribute("y")) + offset.y;
+    const width = Number(rect.getAttribute("width"));
+    const height = Number(rect.getAttribute("height"));
+    const anchors = {
+      left: { x, y: y + height * position, dx: -1, dy: 0 },
+      right: { x: x + width, y: y + height * position, dx: 1, dy: 0 },
+      top: { x: x + width * position, y, dx: 0, dy: -1 },
+      bottom: { x: x + width * position, y: y + height, dx: 0, dy: 1 }
+    };
+    return anchors[side];
+  }
+
+  function updateStateConnections() {
+    stateConnections.forEach(connection => {
+      const start = stateAnchor(document.getElementById(connection.dataset.from), connection.dataset.fromSide, Number(connection.dataset.fromPosition || 0.5));
+      const end = stateAnchor(document.getElementById(connection.dataset.to), connection.dataset.toSide, Number(connection.dataset.toPosition || 0.5));
+      const distance = Math.max(50, Math.min(140, Math.hypot(end.x - start.x, end.y - start.y) / 2));
+      const first = { x: start.x + start.dx * distance, y: start.y + start.dy * distance };
+      const second = { x: end.x + end.dx * distance, y: end.y + end.dy * distance };
+      const labelX = (start.x + 3 * first.x + 3 * second.x + end.x) / 8 + Number(connection.dataset.labelDx || 0);
+      const labelY = (start.y + 3 * first.y + 3 * second.y + end.y) / 8 + Number(connection.dataset.labelDy || 0);
+      const width = Number(connection.dataset.width);
+      const path = document.createElementNS(svgNamespace, "path");
+      path.setAttribute("class", "state-path");
+      path.setAttribute("d", `M${start.x} ${start.y} C${first.x} ${first.y} ${second.x} ${second.y} ${end.x} ${end.y}`);
+      const background = document.createElementNS(svgNamespace, "rect");
+      background.setAttribute("class", "state-label-bg");
+      background.setAttribute("x", labelX - width / 2);
+      background.setAttribute("y", labelY - 15);
+      background.setAttribute("width", width);
+      background.setAttribute("height", 30);
+      background.setAttribute("rx", 15);
+      const label = document.createElementNS(svgNamespace, "text");
+      label.setAttribute("class", width > 150 ? "state-label state-label-small" : "state-label");
+      label.setAttribute("x", labelX);
+      label.setAttribute("y", labelY + 5);
+      label.textContent = connection.dataset.label;
+      connection.replaceChildren(path, background, label);
+    });
+  }
+
+  function moveState(item, x, y) {
+    const rect = item.querySelector(".state-node");
+    const viewBox = stateSvg.viewBox.baseVal;
+    const left = Number(rect.getAttribute("x"));
+    const top = Number(rect.getAttribute("y"));
+    const width = Number(rect.getAttribute("width"));
+    const height = Number(rect.getAttribute("height"));
+    const boundedX = Math.max(viewBox.x - left, Math.min(viewBox.x + viewBox.width - left - width, x));
+    const boundedY = Math.max(viewBox.y - top, Math.min(viewBox.y + viewBox.height - top - height, y));
+    item.setAttribute("transform", `translate(${Math.round(boundedX)} ${Math.round(boundedY)})`);
+    updateStateConnections();
+    stateStatus.textContent = "";
+  }
+
+  function svgPoint(event) {
+    const point = stateSvg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+    return point.matrixTransform(stateSvg.getScreenCTM().inverse());
+  }
+
+  stateItems.forEach(item => {
+    let drag;
+    item.addEventListener("pointerdown", event => {
+      if (event.button !== 0) return;
+      const point = svgPoint(event);
+      const offset = stateOffset(item);
+      drag = { id: event.pointerId, x: point.x - offset.x, y: point.y - offset.y };
+      item.setPointerCapture(event.pointerId);
+      item.focus();
+      event.preventDefault();
+    });
+    item.addEventListener("pointermove", event => {
+      if (!drag || drag.id !== event.pointerId) return;
+      const point = svgPoint(event);
+      moveState(item, point.x - drag.x, point.y - drag.y);
+    });
+    item.addEventListener("pointerup", event => {
+      if (drag && drag.id === event.pointerId) drag = null;
+    });
+    item.addEventListener("pointercancel", () => { drag = null; });
+    item.addEventListener("lostpointercapture", () => { drag = null; });
+    item.addEventListener("keydown", event => {
+      const directions = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+      const direction = directions[event.key];
+      if (!direction) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const offset = stateOffset(item);
+      const step = event.shiftKey ? 10 : 1;
+      moveState(item, offset.x + direction[0] * step, offset.y + direction[1] * step);
+    });
+  });
+
+  const stateEditToggle = stateDiagram.querySelector(".state-edit-toggle");
+  stateEditToggle.addEventListener("click", () => {
+    const editing = stateDiagram.classList.toggle("editing");
+    stateEditToggle.setAttribute("aria-pressed", String(editing));
+    stateEditToggle.textContent = editing ? "Zamknij edytor" : "Edytuj diagram";
+  });
+
+  stateDiagram.querySelector(".state-save").addEventListener("click", async () => {
+    const copy = document.documentElement.cloneNode(true);
+    copy.querySelectorAll(".slide").forEach((slide, index) => {
+      slide.classList.toggle("active", index === 0);
+      slide.removeAttribute("aria-hidden");
+    });
+    copy.querySelectorAll(".request-slide .request").forEach(container => { container.replaceChildren(); });
+    copy.querySelector("#counter").textContent = "";
+    copy.querySelector("#progress").removeAttribute("style");
+    copy.querySelector("#previous").removeAttribute("disabled");
+    copy.querySelector("#next").removeAttribute("disabled");
+    copy.querySelector(".state-diagram").classList.remove("editing");
+    copy.querySelector(".state-edit-toggle").setAttribute("aria-pressed", "false");
+    copy.querySelector(".state-edit-toggle").textContent = "Edytuj diagram";
+    copy.querySelector(".state-status").textContent = "";
+    const html = "<!doctype html>\n" + copy.outerHTML;
+    try {
+      if (window.showSaveFilePicker) {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: "prezentacja.html",
+          types: [{ description: "Prezentacja HTML", accept: { "text/html": [".html"] } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(html);
+        await writable.close();
+        stateStatus.textContent = "Układ zapisano w wybranym pliku HTML.";
+      } else {
+        const url = URL.createObjectURL(new Blob([html], { type: "text/html;charset=utf-8" }));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "prezentacja.html";
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        stateStatus.textContent = "Pobrano HTML. Zastąp nim plik prezentacji w jej folderze.";
+      }
+    } catch (error) {
+      if (error.name === "AbortError") {
+        stateStatus.textContent = "Anulowano zapis.";
+      } else {
+        stateStatus.textContent = `Nie udało się zapisać HTML: ${error.message}`;
+      }
+    }
+  });
+  updateStateConnections();
+
   const requestSlides = [...document.querySelectorAll(".request-slide")];
   requestSlides.forEach(slide => {
     const container = slide.querySelector(".request");
@@ -419,5 +660,6 @@
   });
   showSlide(0);
 </script>
-</body>
-</html>
+
+
+</body></html>
